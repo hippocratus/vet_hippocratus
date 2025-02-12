@@ -1,24 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { searchVetInfo } from "@/src/utils/api"; // Убедись, что путь к api.ts правильный
+import { searchVetInfo } from "@/utils/api"; // Исправленный импорт
 
 export default function TestPage() {
   const [query, setQuery] = useState("");
   const [response, setResponse] = useState("");
 
   const handleSearch = async () => {
-    if (!query.trim()) {
-      setResponse("Введите запрос!");
-      return;
-    }
+    if (!query.trim()) return; // Проверка на пустую строку
 
     try {
       const result = await searchVetInfo(query);
       setResponse(result);
     } catch (error) {
       console.error("Ошибка при запросе:", error);
-      setResponse("Ошибка при получении данных.");
+      setResponse("Ошибка при получении данных");
     }
   };
 
