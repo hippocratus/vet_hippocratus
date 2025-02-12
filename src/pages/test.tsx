@@ -1,7 +1,7 @@
-"use client"; // Гарантируем, что хук useState не сломается на сервере
+"use client";
 
 import { useState } from "react";
-import { searchVetInfo } from "../utils/api";
+import { searchVetInfo } from "@/src/utils/api"; // Убедись, что путь к api.ts правильный
 
 export default function TestPage() {
   const [query, setQuery] = useState("");
@@ -9,33 +9,30 @@ export default function TestPage() {
 
   const handleSearch = async () => {
     if (!query.trim()) {
-      setResponse("Введите запрос перед поиском");
+      setResponse("Введите запрос!");
       return;
     }
 
-    const result = await searchVetInfo(query);
-    setResponse(result);
+    try {
+      const result = await searchVetInfo(query);
+      setResponse(result);
+    } catch (error) {
+      console.error("Ошибка при запросе:", error);
+      setResponse("Ошибка при получении данных.");
+    }
   };
 
   return (
-    <div style={{ padding: 20, fontFamily: "Arial, sans-serif" }}>
+    <div style={{ padding: 20 }}>
       <h1>Поиск ветеринарной информации</h1>
       <input
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Введите запрос"
-        style={{
-          padding: 8,
-          marginRight: 10,
-          borderRadius: 4,
-          border: "1px solid #ccc",
-        }}
       />
-      <button onClick={handleSearch} style={{ padding: 8, borderRadius: 4 }}>
-        Искать
-      </button>
-      <div style={{ marginTop: 20 }}>
+      <button onClick={handleSearch}>Искать</button>
+      <div>
         <h3>Результат:</h3>
         <p>{response}</p>
       </div>
