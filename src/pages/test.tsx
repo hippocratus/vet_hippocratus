@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { searchVetInfo } from "@/utils/api"; // Исправленный импорт
+import { searchVetInfo } from '../../utils/api';
 
 export default function TestPage() {
   const [query, setQuery] = useState("");
