@@ -1,4 +1,4 @@
-const BASE_URL = "http://127.0.0.1:9000"; // Адрес твоего бэкенда
+const BASE_URL = "http://138.199.157.34:9000"; // Адрес твоего бэкенда
 
 export async function searchVetInfo(query: string): Promise<string> {
   if (!query.trim()) return "Введите корректный запрос";
