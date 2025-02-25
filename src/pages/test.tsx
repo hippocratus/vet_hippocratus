@@ -22,23 +22,24 @@ export default function TestPage() {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gray-100 p-6">
-      <div className="bg-white shadow-lg rounded-xl p-6 w-full max-w-2xl">
-        <h1 className="text-2xl font-bold text-gray-800 text-center">
-          Veterinary Information Search
+    <div className="min-h-screen bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-4xl w-full">
+        <h1 className="text-4xl font-extrabold text-center text-gray-800 mb-4">
+          Veterinary Information Portal
         </h1>
-        <p className="text-gray-500 text-center mt-2">
-          Find veterinary-related information quickly and easily.
+        <p className="text-lg text-center text-gray-600 mb-8">
+          Discover comprehensive veterinary information at your fingertips.
         </p>
 
-        {/* Секция с SVG‑иллюстрациями */}
-        <div className="flex flex-wrap gap-4 justify-center mt-6">
+        {/* Секция с SVG-иллюстрациями */}
+        <div className="flex flex-wrap justify-center gap-6 mb-8">
           {/* Иллюстрация 1 */}
           <svg
             width="180"
-            height="auto"
+            height="180"
             viewBox="0 0 400 300"
             xmlns="http://www.w3.org/2000/svg"
+            className="rounded-xl shadow-lg"
           >
             <rect width="400" height="300" fill="#d3eaf2" />
             <rect
@@ -115,9 +116,10 @@ export default function TestPage() {
           {/* Иллюстрация 2 */}
           <svg
             width="180"
-            height="auto"
+            height="180"
             viewBox="0 0 400 300"
             xmlns="http://www.w3.org/2000/svg"
+            className="rounded-xl shadow-lg"
           >
             <rect width="400" height="300" fill="#f0e6f6" />
             <rect
@@ -194,9 +196,10 @@ export default function TestPage() {
           {/* Иллюстрация 3 */}
           <svg
             width="180"
-            height="auto"
+            height="180"
             viewBox="0 0 400 300"
             xmlns="http://www.w3.org/2000/svg"
+            className="rounded-xl shadow-lg"
           >
             <rect width="400" height="300" fill="#e6f7d4" />
             <rect
@@ -271,30 +274,30 @@ export default function TestPage() {
           </svg>
         </div>
 
-        <div className="flex flex-col md:flex-row mt-6">
+        <div className="flex flex-col md:flex-row gap-4 mb-6">
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Enter your query..."
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-5 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-4 focus:ring-blue-300 transition"
           />
           <button
             onClick={handleSearch}
-            className="mt-3 md:mt-0 md:ml-3 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition flex items-center"
+            className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-3 rounded-full shadow-md hover:from-blue-600 hover:to-purple-600 transition flex items-center justify-center"
             disabled={loading}
           >
             {loading ? (
-              <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5"></span>
+              <span className="animate-spin border-4 border-white border-t-transparent rounded-full w-6 h-6"></span>
             ) : (
               "Search"
             )}
           </button>
         </div>
 
-        <div className="mt-6 bg-gray-50 p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-800">Result:</h3>
-          <p className="text-gray-600 mt-2 whitespace-pre-wrap">
+        <div className="bg-gray-100 rounded-xl p-6 shadow-inner mt-8">
+          <h3 className="text-2xl font-semibold text-gray-800 mb-2">Result:</h3>
+          <p className="text-gray-700 whitespace-pre-wrap">
             {response || "No results yet"}
           </p>
         </div>
