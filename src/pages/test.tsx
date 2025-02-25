@@ -21,176 +21,92 @@ export default function TestPage() {
     setLoading(false);
   };
 
-  // -------- СТИЛИ (inline-styles) --------
-  const outerContainerStyle: React.CSSProperties = {
-    minHeight: "100vh",
-    // Градиентный фон (слева-направо)
-    background: "linear-gradient(to right, #b2f0e3, #fde2e4)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "30px",
-    boxSizing: "border-box",
-  };
-
-  const cardStyle: React.CSSProperties = {
-    width: "100%",
-    maxWidth: "800px",
-    backgroundColor: "#fff",
-    borderRadius: "20px",
-    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.1)",
-    padding: "40px",
-    boxSizing: "border-box",
-  };
-
-  const titleStyle: React.CSSProperties = {
-    textAlign: "center",
-    fontSize: "2.2rem",
-    fontWeight: 700,
-    margin: 0,
-    marginBottom: "10px",
-    color: "#333",
-  };
-
-  const subtitleStyle: React.CSSProperties = {
-    textAlign: "center",
-    fontSize: "1.1rem",
-    color: "#666",
-    margin: 0,
-    marginBottom: "30px",
-  };
-
-  const illustrationsContainerStyle: React.CSSProperties = {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "20px",
-    justifyContent: "center",
-    marginBottom: "30px",
-  };
-
-  const svgStyle: React.CSSProperties = {
-    width: "180px",
-    height: "auto",
-    backgroundColor: "#fff",
-    borderRadius: "8px",
-    boxShadow: "0 3px 8px rgba(0,0,0,0.1)",
-  };
-
-  const searchContainerStyle: React.CSSProperties = {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "10px",
-    marginBottom: "30px",
-    justifyContent: "center",
-  };
-
-  const inputStyle: React.CSSProperties = {
-    flex: "1 1 auto",
-    minWidth: "200px",
-    padding: "12px 16px",
-    fontSize: "1rem",
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-    outline: "none",
-  };
-
-  const buttonStyle: React.CSSProperties = {
-    padding: "12px 20px",
-    fontSize: "1rem",
-    border: "none",
-    borderRadius: "8px",
-    background: "linear-gradient(to right, #36c, #6cf)",
-    color: "#fff",
-    cursor: "pointer",
-    boxShadow: "0 3px 8px rgba(0,0,0,0.15)",
-  };
-
-  const resultContainerStyle: React.CSSProperties = {
-    backgroundColor: "#f8f8f8",
-    padding: "20px",
-    borderRadius: "8px",
-    boxShadow: "inset 0 2px 6px rgba(0,0,0,0.05)",
-  };
-
-  const resultTitleStyle: React.CSSProperties = {
-    fontSize: "1.2rem",
-    margin: 0,
-    marginBottom: "10px",
-    color: "#333",
-  };
-
-  const resultTextStyle: React.CSSProperties = {
-    margin: 0,
-    whiteSpace: "pre-wrap",
-    color: "#555",
-    fontSize: "1rem",
-  };
-
-  // -------- РЕНДЕР КОМПОНЕНТА --------
   return (
-    <div style={outerContainerStyle}>
-      <div style={cardStyle}>
-        <h1 style={titleStyle}>Veterinary Information Portal</h1>
-        <p style={subtitleStyle}>
-          Discover comprehensive veterinary information at your fingertips.
+    <div className="flex flex-col items-center min-h-screen bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 p-8">
+      {/* Основной контейнер */}
+      <div className="bg-white shadow-2xl rounded-3xl p-10 max-w-4xl w-full text-center">
+        <h1 className="text-4xl font-extrabold text-gray-800">
+          Veterinary Information Portal
+        </h1>
+        <p className="text-lg text-gray-600 mt-3">
+          Find comprehensive veterinary information at your fingertips.
         </p>
 
-        {/* Иллюстрации */}
-        <div style={illustrationsContainerStyle}>
+        {/* Блок с SVG-иллюстрациями */}
+        <div className="flex flex-wrap justify-center gap-6 mt-8">
           {/* Иллюстрация 1 */}
-          <svg style={svgStyle} viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-            <rect width="400" height="300" fill="#d3eaf2" />
-            <rect x="140" y="100" width="120" height="80" fill="#ffd766" stroke="#444" strokeWidth="2" />
-            <polygon points="140,100 200,60 260,100" fill="#a66e3a" />
-            <circle cx="80" cy="80" r="20" fill="#f3d9c2" />
-            <rect x="70" y="100" width="20" height="40" fill="#ffffff" />
-            <rect x="66" y="100" width="28" height="10" fill="#ffffff" />
-            <line x1="70" y1="140" x2="70" y2="150" stroke="#000" strokeWidth="2" />
-            <line x1="90" y1="140" x2="90" y2="150" stroke="#000" strokeWidth="2" />
-            <line x1="66" y1="110" x2="55" y2="100" stroke="#000" strokeWidth="2" />
-            <line x1="94" y1="110" x2="105" y2="100" stroke="#000" strokeWidth="2" />
-            <circle cx="220" cy="170" r="20" fill="#ffffff" stroke="#444" strokeWidth="2" />
-            <circle cx="220" cy="195" r="15" fill="#ffffff" stroke="#444" strokeWidth="2" />
-            <circle cx="215" cy="168" r="4" fill="#000" />
-            <ellipse cx="225" cy="168" rx="2" ry="4" fill="#000" transform="rotate(20 225 168)" />
-            <line x1="220" y1="185" x2="220" y2="205" stroke="#444" strokeWidth="2" />
-            <line x1="230" y1="185" x2="230" y2="205" stroke="#444" strokeWidth="2" />
-            <line x1="210" y1="200" x2="210" y2="215" stroke="#444" strokeWidth="2" />
-            <line x1="220" y1="200" x2="220" y2="215" stroke="#444" strokeWidth="2" />
-            <circle cx="270" cy="170" r="15" fill="#666" stroke="#444" strokeWidth="2" />
-            <polygon points="265,157 260,150 270,155" fill="#444" />
-            <polygon points="275,157 280,150 270,155" fill="#444" />
-            <circle cx="270" cy="190" r="12" fill="#666" stroke="#444" strokeWidth="2" />
-            <line x1="270" y1="178" x2="270" y2="185" stroke="#000" strokeWidth="2" />
-            <line x1="265" y1="180" x2="275" y2="180" stroke="#000" strokeWidth="2" />
-            <line x1="265" y1="195" x2="265" y2="205" stroke="#444" strokeWidth="2" />
-            <line x1="275" y1="195" x2="275" y2="205" stroke="#444" strokeWidth="2" />
-            <line x1="282" y1="190" x2="290" y2="185" stroke="#444" strokeWidth="2" />
-          </svg>
+          <div className="bg-blue-100 p-4 rounded-lg shadow-lg">
+            <svg
+              width="180"
+              height="180"
+              viewBox="0 0 400 300"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="400" height="300" fill="#d3eaf2" />
+              <polygon points="140,100 200,60 260,100" fill="#a66e3a" />
+              <circle cx="80" cy="80" r="20" fill="#f3d9c2" />
+            </svg>
+          </div>
 
           {/* Иллюстрация 2 */}
-          <svg style={svgStyle} viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-            <rect width="400" height="300" fill="#f0e6f6" />
-            <rect x="120" y="90" width="160" height="90" fill="#ffae42" stroke="#444" strokeWidth="2" />
-            <polygon points="120,90 200,40 280,90" fill="#c76e3a" />
-            <circle cx="70" cy="70" r="20" fill="#f3d9c2" />
-            <rect x="60" y="90" width="20" height="40" fill="#ffffff" />
-            <rect x="56" y="90" width="28" height="10" fill="#ffffff" />
-            <line x1="60" y1="130" x2="60" y2="140" stroke="#000" strokeWidth="2" />
-            <line x1="80" y1="130" x2="80" y2="140" stroke="#000" strokeWidth="2" />
-            <line x1="56" y1="100" x2="45" y2="110" stroke="#000" strokeWidth="2" />
-            <line x1="84" y1="100" x2="95" y2="90" stroke="#000" strokeWidth="2" />
-            <circle cx="230" cy="180" r="20" fill="#ffc" stroke="#444" strokeWidth="2" />
-            <circle cx="230" cy="205" r="15" fill="#ffc" stroke="#444" strokeWidth="2" />
-            <circle cx="225" cy="178" r="4" fill="#000" />
-            <ellipse cx="235" cy="178" rx="2" ry="4" fill="#000" transform="rotate(20 235 178)" />
-            <line x1="230" y1="195" x2="230" y2="215" stroke="#444" strokeWidth="2" />
-            <line x1="240" y1="195" x2="240" y2="215" stroke="#444" strokeWidth="2" />
-            <line x1="220" y1="210" x2="220" y2="225" stroke="#444" strokeWidth="2" />
-            <line x1="230" y1="210" x2="230" y2="225" stroke="#444" strokeWidth="2" />
-            <circle cx="280" cy="180" r="15" fill="#333" stroke="#444" strokeWidth="2" />
-            <polygon points="275,167 270,160 280,165" fill="#444" />
-            <polygon points="285,167 290,160 280,165" fill="#444" />
-            <circle cx="280" cy="200" r="12" fill="#333" stroke="#444" strokeWidth="2" />
-            <line x1="280" y1="188" x2="280" y2="195" stroke="#000" strokeWidth="2" />
-            <line x1="275" y1="190" x
+          <div className="bg-purple-100 p-4 rounded-lg shadow-lg">
+            <svg
+              width="180"
+              height="180"
+              viewBox="0 0 400 300"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="400" height="300" fill="#f0e6f6" />
+              <polygon points="120,90 200,40 280,90" fill="#c76e3a" />
+              <circle cx="70" cy="70" r="20" fill="#f3d9c2" />
+            </svg>
+          </div>
+
+          {/* Иллюстрация 3 */}
+          <div className="bg-green-100 p-4 rounded-lg shadow-lg">
+            <svg
+              width="180"
+              height="180"
+              viewBox="0 0 400 300"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="400" height="300" fill="#e6f7d4" />
+              <polygon points="130,110 200,70 270,110" fill="#9e6b3a" />
+              <circle cx="90" cy="90" r="20" fill="#f3d9c2" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Поле поиска */}
+        <div className="flex flex-col md:flex-row gap-4 mt-8">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Enter your query..."
+            className="flex-1 px-5 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-4 focus:ring-blue-300 transition"
+          />
+          <button
+            onClick={handleSearch}
+            className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-3 rounded-full shadow-md hover:from-blue-600 hover:to-purple-600 transition flex items-center justify-center"
+            disabled={loading}
+          >
+            {loading ? (
+              <span className="animate-spin border-4 border-white border-t-transparent rounded-full w-6 h-6"></span>
+            ) : (
+              "Search"
+            )}
+          </button>
+        </div>
+
+        {/* Блок с результатами */}
+        <div className="bg-gray-100 rounded-xl p-6 shadow-inner mt-8">
+          <h3 className="text-2xl font-semibold text-gray-800 mb-2">Result:</h3>
+          <p className="text-gray-700 whitespace-pre-wrap">
+            {response || "No results yet"}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
