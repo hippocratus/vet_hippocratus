@@ -1,4 +1,4 @@
-const BASE_URL = "https://hippocratus.duckdns.org"; // Адрес твоего бэкенда
+const BASE_URL = "https://hippocratus.duckdns.org"; // 
 
 export async function searchVetInfo(query: string): Promise<string> {
   if (!query.trim()) return "Введите корректный запрос";
