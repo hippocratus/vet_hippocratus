@@ -18,6 +18,7 @@ python -m tools_vet_analytics.run_all \
 - Write operations are guarded to allow only DB `vet_analytics`.
 - Pipeline uses deterministic IDs and upserts for idempotent reruns.
 - SRV DNS resolution for `mongodb+srv://` requires `dnspython` (included in `requirements-analytics.txt`).
+- If local SRV DNS fails, the toolkit attempts DoH-based SRV/TXT resolution and retries with a direct `mongodb://host1,host2...` URI.
 
 ## Outputs
 
