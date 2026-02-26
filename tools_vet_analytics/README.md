@@ -17,6 +17,7 @@ python -m tools_vet_analytics.run_all \
 - Read operations use `MONGO_URI_READ` + `MONGO_DB_READ`.
 - Write operations are guarded to allow only DB `vet_analytics`.
 - Pipeline uses deterministic IDs and upserts for idempotent reruns.
+- SRV DNS resolution for `mongodb+srv://` requires `dnspython` (included in `requirements-analytics.txt`).
 
 ## Outputs
 
