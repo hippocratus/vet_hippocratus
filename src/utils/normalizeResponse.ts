@@ -33,4 +33,3 @@ export function normalizeResponse(raw: unknown): NormalizedResponse {
     return { answerMarkdown: String(raw) };
   }
 }
-
