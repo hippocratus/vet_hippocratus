@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from statistics import median
 
 from ..common.mongo import safe_insert_one
 
@@ -22,21 +23,46 @@ def run(ctx):
     for a in atoms:
         atom_by_type[a["atom_type"]] = atom_by_type.get(a["atom_type"], 0) + 1
 
+    locale_dist = {}
+    for b in blocks:
+        k = b.get("source_locale", "ru") or "ru"
+        locale_dist[k] = locale_dist.get(k, 0) + 1
+
     concept_blocks = [c.get("block_count", 0) for c in concepts] or [0]
+    atom_dedup_groups = [d for d in dedups if d.get("dedup_type") == "atom"]
+    dedup_rate = len(atom_dedup_groups) / (len(atoms) or 1)
+
     gaps = {
-        "concepts_zero_red_flags": [c["concept_id"] for c in concepts if not list(wdb["kb_atoms"].find({"run_id": cfg.run_id, "concept_id": c["concept_id"], "atom_type": "red_flag"}, {"_id": 1}).limit(1))],
-        "concepts_zero_diagnostic_steps": [c["concept_id"] for c in concepts if not list(wdb["kb_atoms"].find({"run_id": cfg.run_id, "concept_id": c["concept_id"], "atom_type": "diagnostic_step"}, {"_id": 1}).limit(1))],
+        "concepts_zero_red_flags": [
+            c["concept_id"]
+            for c in concepts
+            if not list(wdb["kb_atoms"].find({"run_id": cfg.run_id, "concept_id": c["concept_id"], "atom_type": "red_flag"}, {"_id": 1}).limit(1))
+        ],
+        "concepts_zero_diagnostic_steps": [
+            c["concept_id"]
+            for c in concepts
+            if not list(wdb["kb_atoms"].find({"run_id": cfg.run_id, "concept_id": c["concept_id"], "atom_type": "diagnostic_step"}, {"_id": 1}).limit(1))
+        ],
         "concepts_low_evidence": [c["concept_id"] for c in concepts if c.get("block_count", 0) < 5],
+        "concepts_high_dup_ratio": [
+            c["concept_id"]
+            for c in concepts
+            if len(list(wdb["dedup_groups"].find({"run_id": cfg.run_id, "dedup_type": "atom", "members.1": {"$exists": True}}).limit(1))) > 0
+        ],
     }
 
     coverage = {
         "source_collections": len(inv),
         "evidence_blocks": len(blocks),
+        "evidence_locale_distribution": locale_dist,
         "concepts": len(concepts),
         "concept_block_count_min": min(concept_blocks),
+        "concept_block_count_median": median(concept_blocks),
         "concept_block_count_max": max(concept_blocks),
         "atoms_total": len(atoms),
         "atoms_by_type": atom_by_type,
+        "atom_dedup_groups": len(atom_dedup_groups),
+        "atom_dedup_rate": dedup_rate,
         "dedup_groups_total": len(dedups),
         "qa_units_total": len(qa),
         "qa_units_by_variant": {
@@ -62,8 +88,14 @@ def run(ctx):
             "Рассмотреть embeddings-подход на следующей итерации.",
         ],
         "report_paths": [
-            "reports/inventory.md", "reports/dedup_raw_text.md", "reports/evidence_blocks.md", "reports/concepts_summary.md",
-            "reports/atoms_summary.md", "reports/qa_units_summary.md", "reports/retrieval_eval.md", "reports/final_report.md"
+            "reports/inventory.md",
+            "reports/dedup_raw_text.md",
+            "reports/evidence_blocks.md",
+            "reports/concepts_summary.md",
+            "reports/atoms_summary.md",
+            "reports/qa_units_summary.md",
+            "reports/retrieval_eval.md",
+            "reports/final_report.md",
         ],
         "warnings": ctx.get("warnings", []),
     }
