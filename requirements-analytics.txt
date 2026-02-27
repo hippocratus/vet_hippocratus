@@ -1,0 +1,7 @@
+pymongo
+dnspython
+pandas
+numpy
+scikit-learn
+tqdm
+regex
