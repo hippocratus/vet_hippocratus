@@ -71,9 +71,9 @@ def run(ctx):
         },
     }
 
-    Path("reports/coverage.json").write_text(json.dumps(coverage, ensure_ascii=False, indent=2), encoding="utf-8")
+    Path("reports/coverage.json").write_text(json.dumps(coverage, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
     Path("reports/coverage.md").write_text("# Coverage\n\n" + "\n".join([f"- {k}: {v}" for k, v in coverage.items() if k != "atoms_by_type"]), encoding="utf-8")
-    Path("reports/gaps.json").write_text(json.dumps(gaps, ensure_ascii=False, indent=2), encoding="utf-8")
+    Path("reports/gaps.json").write_text(json.dumps(gaps, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
     Path("reports/gaps.md").write_text("# Gaps\n\n" + "\n".join([f"- {k}: {len(v)}" for k, v in gaps.items()]), encoding="utf-8")
 
     final = {
@@ -99,7 +99,7 @@ def run(ctx):
         ],
         "warnings": ctx.get("warnings", []),
     }
-    Path("reports/final_report.json").write_text(json.dumps(final, ensure_ascii=False, indent=2), encoding="utf-8")
+    Path("reports/final_report.json").write_text(json.dumps(final, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
     Path("reports/final_report.md").write_text(
         "# Final report\n\n"
         f"- run_id: {cfg.run_id}\n"
