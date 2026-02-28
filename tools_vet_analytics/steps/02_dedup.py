@@ -9,16 +9,28 @@ from ..common.mongo import safe_upsert_many
 from ..common.normalize import normalize_ru_text
 
 
+def _get_dotted_value(doc, path):
+    cur = doc
+    for key in path.split("."):
+        if not isinstance(cur, dict):
+            return None
+        cur = cur.get(key)
+        if cur is None:
+            return None
+    return cur
+
+
 def _load_inventory(ctx):
     if "inventory" in ctx:
         return ctx["inventory"]
-    return list(ctx["mongo"].write_db["inv_inventory"].find({"run_id": ctx["config"].run_id}))
+    return list(ctx["mongo"].write_db["inv_inventory"].find({"run_id": ctx["config"].active_run_id or ctx["config"].run_id}))
 
 
 def run(ctx):
     cfg = ctx["config"]
     rdb = ctx["mongo"].read_db
     wdb = ctx["mongo"].write_db
+    read_run_id = cfg.active_run_id or cfg.run_id
     inv = _load_inventory(ctx)
 
     candidates = []
@@ -35,11 +47,11 @@ def run(ctx):
     for coll, _, content_field in selected:
         c = rdb[coll]
         limit = cfg.limit or 0
-        cur = c.find({}, {content_field.split(".")[-1]: 1, "title": 1, "name": 1})
+        cur = c.find({}, {content_field: 1, "title": 1, "name": 1})
         if limit:
             cur = cur.limit(limit)
         for doc in cur:
-            raw = doc.get(content_field.split(".")[-1], "")
+            raw = _get_dotted_value(doc, content_field) or ""
             if not isinstance(raw, str) or not raw.strip():
                 continue
             norm = normalize_ru_text(raw)

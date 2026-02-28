@@ -1,17 +1,29 @@
 from __future__ import annotations
 
+from functools import lru_cache
+from pathlib import Path
 from typing import List, Tuple
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-def build_tfidf(texts: List[str], max_features: int = 30000):
+@lru_cache(maxsize=1)
+def load_ru_stopwords() -> frozenset[str]:
+    path = Path(__file__).with_name("stopwords_ru.txt")
+    if not path.exists():
+        return frozenset()
+    words = {ln.strip().lower() for ln in path.read_text(encoding="utf-8").splitlines() if ln.strip() and not ln.strip().startswith("#")}
+    return frozenset(words)
+
+
+def build_tfidf(texts: List[str], max_features: int = 30000, use_stopwords: bool = True):
     vec = TfidfVectorizer(
         analyzer="word",
         ngram_range=(1, 2),
         min_df=1,
         max_features=max_features,
-        token_pattern=r"(?u)\b\w+\b",
+        token_pattern=r"(?u)\b[а-яА-Яa-zA-Z]{2,}\b",
+        stop_words=list(load_ru_stopwords()) if use_stopwords else None,
     )
     mat = vec.fit_transform(texts)
     return vec, mat

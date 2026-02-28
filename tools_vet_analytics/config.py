@@ -19,6 +19,7 @@ class AnalyticsConfig:
     dry_run: bool = False
     resume: bool = False
     run_id: str = ""
+    active_run_id: str = ""
     from_step: int = 1
     to_step: int = 8
 
