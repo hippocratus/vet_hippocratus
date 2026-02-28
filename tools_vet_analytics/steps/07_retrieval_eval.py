@@ -53,8 +53,8 @@ def run(ctx):
                         examples.append(
                             {
                                 "query": q,
-                                "concept_id_1": cand_units[i]["concept_id"],
-                                "concept_id_2": cand_units[j]["concept_id"],
+                                "concept_id_1": str(cand_units[i].get("concept_id") or cand_units[i].get("_id")),
+                                "concept_id_2": str(cand_units[j].get("concept_id") or cand_units[j].get("_id")),
                                 "summary1": sum_texts[i],
                                 "summary2": sum_texts[j],
                                 "summary_similarity": float(ssim[i, j]),
@@ -73,7 +73,7 @@ def run(ctx):
         "almost_identical_examples": examples,
     }
     safe_insert_one(wdb["qa_eval"], eval_doc, dry_run=cfg.dry_run)
-    Path("reports/retrieval_eval.json").write_text(json.dumps(eval_doc, ensure_ascii=False, indent=2), encoding="utf-8")
+    Path("reports/retrieval_eval.json").write_text(json.dumps(eval_doc, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
     Path("reports/retrieval_eval.md").write_text(
         "# Retrieval Eval\n\n"
         + f"- queries: {eval_doc['query_count']}\n"
