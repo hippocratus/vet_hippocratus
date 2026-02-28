@@ -9,6 +9,17 @@ from ..common.mongo import safe_upsert_many
 from ..common.normalize import split_chunks
 
 
+def _get_dotted_value(doc, path):
+    cur = doc
+    for key in path.split("."):
+        if not isinstance(cur, dict):
+            return None
+        cur = cur.get(key)
+        if cur is None:
+            return None
+    return cur
+
+
 def run(ctx):
     cfg = ctx["config"]
     rdb = ctx["mongo"].read_db
@@ -18,13 +29,12 @@ def run(ctx):
     out = []
     locale_count = Counter()
     for coll, _, content_field in selected:
-        field = content_field.split(".")[-1]
-        proj = {field: 1, "title": 1, "name": 1, "language": 1, "lang": 1, "locale": 1, "source_locale": 1}
+        proj = {content_field: 1, "title": 1, "name": 1, "language": 1, "lang": 1, "locale": 1, "source_locale": 1}
         cur = rdb[coll].find({}, proj)
         if cfg.limit:
             cur = cur.limit(cfg.limit)
         for doc in cur:
-            text = doc.get(field)
+            text = _get_dotted_value(doc, content_field)
             if not isinstance(text, str) or not text.strip():
                 continue
             chunks = split_chunks(text, cfg.chunk_size_chars, cfg.overlap_chars)
