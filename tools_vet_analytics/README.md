@@ -24,3 +24,14 @@ python -m tools_vet_analytics.run_all \
 
 - Mongo collections in `vet_analytics`: inventory, dedup, evidence blocks, concepts, atoms, QA units, eval, run report.
 - Local reports in `./reports/*.md` and `./reports/*.json`.
+
+
+## Rebuild for an existing run
+
+To rebuild concepts/atoms/qa_units for existing run_id, pass `--run-id <existing>` (and optional step bounds):
+
+```bash
+python -m tools_vet_analytics.run_all --run-id 97e32a35-415d-4b06-987a-2acbd362b7a7 --from-step 4 --to-step 8
+```
+
+For read-only reuse of previous intermediate outputs while writing a new run, pass `--active-run-id <existing_run_id>`.

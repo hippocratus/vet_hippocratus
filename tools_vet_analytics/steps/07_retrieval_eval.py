@@ -13,7 +13,8 @@ from ..common.tfidf import build_tfidf
 def run(ctx):
     cfg = ctx["config"]
     wdb = ctx["mongo"].write_db
-    units = list(wdb["qa_units"].find({"run_id": cfg.run_id}))
+    read_run_id = cfg.active_run_id or cfg.run_id
+    units = list(wdb["qa_units"].find({"run_id": read_run_id}))
     if not units:
         return
 

@@ -33,6 +33,7 @@ def parse_args():
     p.add_argument("--from-step", type=int, default=1)
     p.add_argument("--to-step", type=int, default=8)
     p.add_argument("--run-id", type=str, default="")
+    p.add_argument("--active-run-id", type=str, default="")
     return p.parse_args()
 
 
@@ -49,12 +50,13 @@ def main():
     cfg.from_step = args.from_step
     cfg.to_step = args.to_step
     cfg.run_id = args.run_id or str(uuid.uuid4())
+    cfg.active_run_id = args.active_run_id or cfg.run_id
 
     logger = setup_logging(cfg.run_id)
     mongo = connect_mongo(cfg.mongo_uri_read, cfg.mongo_uri_write, cfg.mongo_db_read, cfg.mongo_db_write)
 
     ctx = {"config": cfg, "logger": logger, "mongo": mongo, "warnings": []}
-    logger.info("Starting run_id=%s steps=%s..%s", cfg.run_id, cfg.from_step, cfg.to_step)
+    logger.info("Starting run_id=%s active_run_id=%s steps=%s..%s", cfg.run_id, cfg.active_run_id, cfg.from_step, cfg.to_step)
 
     for i in range(cfg.from_step, cfg.to_step + 1):
         module = importlib.import_module(STEP_MODULES[i])

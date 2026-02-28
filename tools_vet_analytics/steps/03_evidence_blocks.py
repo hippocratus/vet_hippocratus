@@ -24,6 +24,7 @@ def run(ctx):
     cfg = ctx["config"]
     rdb = ctx["mongo"].read_db
     wdb = ctx["mongo"].write_db
+    read_run_id = cfg.active_run_id or cfg.run_id
     selected = ctx.get("selected_sources", [])
 
     out = []

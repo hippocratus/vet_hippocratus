@@ -10,14 +10,15 @@ from ..common.mongo import safe_insert_one
 def run(ctx):
     cfg = ctx["config"]
     wdb = ctx["mongo"].write_db
+    read_run_id = cfg.active_run_id or cfg.run_id
 
-    inv = list(wdb["inv_inventory"].find({"run_id": cfg.run_id}))
-    blocks = list(wdb["evidence_blocks"].find({"run_id": cfg.run_id}))
-    concepts = list(wdb["kb_concepts"].find({"run_id": cfg.run_id}))
-    atoms = list(wdb["kb_atoms"].find({"run_id": cfg.run_id}))
-    qa = list(wdb["qa_units"].find({"run_id": cfg.run_id}))
-    dedups = list(wdb["dedup_groups"].find({"run_id": cfg.run_id}))
-    qeval = wdb["qa_eval"].find_one({"run_id": cfg.run_id}) or {}
+    inv = list(wdb["inv_inventory"].find({"run_id": read_run_id}))
+    blocks = list(wdb["evidence_blocks"].find({"run_id": read_run_id}))
+    concepts = list(wdb["kb_concepts"].find({"run_id": read_run_id}))
+    atoms = list(wdb["kb_atoms"].find({"run_id": read_run_id}))
+    qa = list(wdb["qa_units"].find({"run_id": read_run_id}))
+    dedups = list(wdb["dedup_groups"].find({"run_id": read_run_id}))
+    qeval = wdb["qa_eval"].find_one({"run_id": read_run_id}) or {}
 
     atom_by_type = {}
     for a in atoms:
@@ -36,18 +37,18 @@ def run(ctx):
         "concepts_zero_red_flags": [
             c["concept_id"]
             for c in concepts
-            if not list(wdb["kb_atoms"].find({"run_id": cfg.run_id, "concept_id": c["concept_id"], "atom_type": "red_flag"}, {"_id": 1}).limit(1))
+            if not list(wdb["kb_atoms"].find({"run_id": read_run_id, "concept_id": c["concept_id"], "atom_type": "red_flag"}, {"_id": 1}).limit(1))
         ],
         "concepts_zero_diagnostic_steps": [
             c["concept_id"]
             for c in concepts
-            if not list(wdb["kb_atoms"].find({"run_id": cfg.run_id, "concept_id": c["concept_id"], "atom_type": "diagnostic_step"}, {"_id": 1}).limit(1))
+            if not list(wdb["kb_atoms"].find({"run_id": read_run_id, "concept_id": c["concept_id"], "atom_type": "diagnostic_step"}, {"_id": 1}).limit(1))
         ],
         "concepts_low_evidence": [c["concept_id"] for c in concepts if c.get("block_count", 0) < 5],
         "concepts_high_dup_ratio": [
             c["concept_id"]
             for c in concepts
-            if len(list(wdb["dedup_groups"].find({"run_id": cfg.run_id, "dedup_type": "atom", "members.1": {"$exists": True}}).limit(1))) > 0
+            if len(list(wdb["dedup_groups"].find({"run_id": read_run_id, "dedup_type": "atom", "members.1": {"$exists": True}}).limit(1))) > 0
         ],
     }
 

@@ -81,10 +81,11 @@ def _aggregate_refs(refs):
 def run(ctx):
     cfg = ctx["config"]
     wdb = ctx["mongo"].write_db
+    read_run_id = cfg.active_run_id or cfg.run_id
 
-    concepts = list(wdb["kb_concepts"].find({"run_id": cfg.run_id}))
-    atoms = list(wdb["kb_atoms"].find({"run_id": cfg.run_id}))
-    blocks_by_id = {b["block_id"]: b for b in wdb["evidence_blocks"].find({"run_id": cfg.run_id}, {"block_id": 1, "text": 1})}
+    concepts = list(wdb["kb_concepts"].find({"run_id": read_run_id}))
+    atoms = list(wdb["kb_atoms"].find({"run_id": read_run_id}))
+    blocks_by_id = {b["block_id"]: b for b in wdb["evidence_blocks"].find({"run_id": read_run_id}, {"block_id": 1, "text": 1})}
 
     atoms_by_concept = defaultdict(list)
     for a in atoms:

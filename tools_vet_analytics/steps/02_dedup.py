@@ -23,13 +23,14 @@ def _get_dotted_value(doc, path):
 def _load_inventory(ctx):
     if "inventory" in ctx:
         return ctx["inventory"]
-    return list(ctx["mongo"].write_db["inv_inventory"].find({"run_id": ctx["config"].run_id}))
+    return list(ctx["mongo"].write_db["inv_inventory"].find({"run_id": ctx["config"].active_run_id or ctx["config"].run_id}))
 
 
 def run(ctx):
     cfg = ctx["config"]
     rdb = ctx["mongo"].read_db
     wdb = ctx["mongo"].write_db
+    read_run_id = cfg.active_run_id or cfg.run_id
     inv = _load_inventory(ctx)
 
     candidates = []
