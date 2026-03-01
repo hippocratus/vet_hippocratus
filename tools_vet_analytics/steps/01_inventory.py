@@ -13,6 +13,17 @@ STRUCTURED_HINTS = {
 }
 
 
+def _get_dotted_value(doc, path):
+    cur = doc
+    for key in path.split("."):
+        if not isinstance(cur, dict):
+            return None
+        cur = cur.get(key)
+        if cur is None:
+            return None
+    return cur
+
+
 def _classify(schema: Dict[str, Any]) -> Dict[str, Any]:
     fp = schema["field_profiles"]
     triggers = []
@@ -42,6 +53,7 @@ def run(ctx):
     logger = ctx["logger"]
 
     out = []
+    sample_docs = []
     for coll in db.list_collection_names():
         c = db[coll]
         count = c.count_documents({})
@@ -66,7 +78,7 @@ def run(ctx):
 
         title_dup = {}
         for tf in schema.get("title_fields", [])[:1]:
-            vals = [s.get(tf.split(".")[-1]) for s in samples if isinstance(s.get(tf.split(".")[-1]), str)]
+            vals = [_get_dotted_value(s, tf) for s in samples if isinstance(_get_dotted_value(s, tf), str)]
             cnt = Counter(vals)
             title_dup = {"field": tf, "top_repeats": cnt.most_common(5)}
 
@@ -83,7 +95,33 @@ def run(ctx):
         }
         out.append(doc)
 
+        for i, s in enumerate(samples[: min(20, len(samples))]):
+            trimmed = {}
+            for k, v in s.items():
+                if k == "_id":
+                    continue
+                if isinstance(v, str):
+                    trimmed[k] = v[:300]
+                elif isinstance(v, (int, float, bool)) or v is None:
+                    trimmed[k] = v
+                elif isinstance(v, list):
+                    trimmed[k] = f"list[{len(v)}]"
+                elif isinstance(v, dict):
+                    trimmed[k] = f"object[{len(v)} keys]"
+                else:
+                    trimmed[k] = str(type(v).__name__)
+                if len(trimmed) >= 12:
+                    break
+            sample_docs.append({
+                "sample_id": f"sample::{coll}::{i}",
+                "run_id": cfg.run_id,
+                "collection": coll,
+                "source_doc_id": str(s.get("_id")),
+                "sample": trimmed,
+            })
+
     safe_upsert_many(wdb["inv_inventory"], out, "inventory_id", cfg.run_id, dry_run=cfg.dry_run)
+    safe_upsert_many(wdb["inv_samples"], sample_docs, "sample_id", cfg.run_id, dry_run=cfg.dry_run)
 
     Path("reports").mkdir(exist_ok=True)
     Path("reports/inventory.json").write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")

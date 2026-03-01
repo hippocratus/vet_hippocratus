@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import importlib
+import sys
 import uuid
 
 from .common.logging import setup_logging
@@ -20,6 +21,18 @@ STEP_MODULES = {
     8: "tools_vet_analytics.steps.08_final_report",
 }
 
+OUTPUT_COLLECTIONS = [
+    "inv_inventory",
+    "inv_samples",
+    "dedup_groups",
+    "evidence_blocks",
+    "kb_concepts",
+    "kb_atoms",
+    "qa_units",
+    "qa_eval",
+    "run_reports",
+]
+
 
 def parse_args():
     p = argparse.ArgumentParser(description="Vet analytics pipeline")
@@ -33,7 +46,22 @@ def parse_args():
     p.add_argument("--from-step", type=int, default=1)
     p.add_argument("--to-step", type=int, default=8)
     p.add_argument("--run-id", type=str, default="")
+    p.add_argument("--active-run-id", type=str, default="")
+    p.add_argument("--include-locales", type=str, default="", help="Comma-separated locale prefixes, e.g. ru,pt-br,sw")
+    p.add_argument("--allow-overwrite-run", action="store_true")
+    p.add_argument("--recompute-titles-only", action="store_true")
     return p.parse_args()
+
+
+def _parse_locales(value: str) -> list[str]:
+    return [x.strip().lower() for x in (value or "").split(",") if x.strip()]
+
+
+def _run_has_outputs(write_db, run_id: str) -> bool:
+    for coll in OUTPUT_COLLECTIONS:
+        if write_db[coll].find_one({"run_id": run_id}, {"_id": 1}):
+            return True
+    return False
 
 
 def main():
@@ -49,12 +77,35 @@ def main():
     cfg.from_step = args.from_step
     cfg.to_step = args.to_step
     cfg.run_id = args.run_id or str(uuid.uuid4())
+    cfg.active_run_id = args.active_run_id or cfg.run_id
+    cfg.include_locales = _parse_locales(args.include_locales)
+    cfg.allow_overwrite_run = args.allow_overwrite_run
+    cfg.recompute_titles_only = args.recompute_titles_only
+
+    if cfg.recompute_titles_only:
+        if not args.run_id:
+            print("--recompute-titles-only requires explicit --run-id", file=sys.stderr)
+            sys.exit(1)
+        cfg.from_step = 4
+        cfg.to_step = 4
+        cfg.active_run_id = cfg.run_id
 
     logger = setup_logging(cfg.run_id)
     mongo = connect_mongo(cfg.mongo_uri_read, cfg.mongo_uri_write, cfg.mongo_db_read, cfg.mongo_db_write)
 
+    if args.run_id and not cfg.allow_overwrite_run and _run_has_outputs(mongo.write_db, cfg.run_id):
+        logger.error("run_id=%s already has output docs; pass --allow-overwrite-run to overwrite", cfg.run_id)
+        sys.exit(1)
+
     ctx = {"config": cfg, "logger": logger, "mongo": mongo, "warnings": []}
-    logger.info("Starting run_id=%s steps=%s..%s", cfg.run_id, cfg.from_step, cfg.to_step)
+    logger.info(
+        "Starting run_id=%s active_run_id=%s steps=%s..%s include_locales=%s",
+        cfg.run_id,
+        cfg.active_run_id,
+        cfg.from_step,
+        cfg.to_step,
+        cfg.include_locales,
+    )
 
     for i in range(cfg.from_step, cfg.to_step + 1):
         module = importlib.import_module(STEP_MODULES[i])

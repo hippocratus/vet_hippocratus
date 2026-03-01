@@ -1,14 +1,20 @@
 {
   "red_flag": [
     "срочно", "неотложно", "немедленно", "экстренно", "кровь", "судороги", "коллапс", "вздутие", "неукротимая", "резкое ухудшение", "шок",
-    "urgent", "emergency", "collapse", "seizure", "shock", "blood"
+    "urgent", "emergency", "collapse", "seizure", "shock", "blood",
+    "urgente", "emergência", "convulsão", "colapso", "sangramento", "choque",
+    "haraka", "dharura", "degedege", "mshtuko", "damu"
   ],
   "triage_step": [
-    "триаж", "оценить состояние", "контроль дыхания", "проверить", "покой", "monitor", "triage", "stabilize"
+    "триаж", "оценить состояние", "контроль дыхания", "проверить", "покой", "monitor", "triage", "stabilize",
+    "repouso", "observar", "hidratar", "clínica",
+    "pumzika", "fuatilia", "mpe maji", "kliniki"
   ],
   "diagnostic_step": [
     "анализ крови", "биохим", "общий анализ", "рентген", "узи", "диагност", "пальпация", "осмотр", "температура", "гематокрит",
-    "diagnostic", "x-ray", "ultrasound", "cbc", "biochemistry"
+    "diagnostic", "x-ray", "ultrasound", "cbc", "biochemistry",
+    "diagnóstico", "hemograma", "ultrassom", "raio-x", "exame",
+    "uchunguzi", "vipimo", "damu", "x-ray", "ultrasound"
   ],
   "differential": [
     "возможные причины", "дифферен", "исключить", "подозрение", "вероятно", "может быть",
@@ -16,7 +22,9 @@
   ],
   "owner_action": [
     "наблюдать", "поить", "не кормить", "изолировать", "обратиться", "в клинику", "срочно в", "покой",
-    "watch", "hydrate", "do not feed", "isolate", "visit vet"
+    "watch", "hydrate", "do not feed", "isolate", "visit vet",
+    "observar", "hidratar", "não alimentar", "isolar", "ir à clínica",
+    "fuatilia", "mpe maji", "usipe chakula", "tenga", "nenda kliniki"
   ],
   "note_limitation": [
     "ограничение", "не заменяет", "требуется осмотр", "только ориентировочно", "limitation", "not a diagnosis"
