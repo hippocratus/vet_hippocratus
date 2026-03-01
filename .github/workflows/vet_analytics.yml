@@ -1,0 +1,36 @@
+name: Vet Analytics v1.1
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 4 * * *'
+
+jobs:
+  analytics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements-analytics.txt
+
+      - name: Run analytics
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          MONGO_URI_READ: ${{ secrets.MONGO_URI_READ }}
+          MONGO_URI_WRITE: ${{ secrets.MONGO_URI_WRITE }}
+          MONGO_DB_READ: vet_database
+          MONGO_DB_WRITE: vet_analytics
+        run: |
+          python -m tools_vet_analytics.run_all --include-locales ru --k-clusters 50
+          python -m tools_vet_analytics.export_dashboard_data --out reports/dashboard_data.json --limit-runs 10
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: vet-analytics-reports
+          path: reports/
