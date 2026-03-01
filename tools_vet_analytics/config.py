@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass, asdict
-from typing import Any, Dict
+from dataclasses import asdict, dataclass
+from typing import Any, Dict, List
 
 
 @dataclass
@@ -22,6 +22,9 @@ class AnalyticsConfig:
     active_run_id: str = ""
     from_step: int = 1
     to_step: int = 8
+    include_locales: List[str] | None = None
+    allow_overwrite_run: bool = False
+    recompute_titles_only: bool = False
 
     def to_dict(self) -> Dict[str, Any]:
         data = asdict(self)
@@ -31,9 +34,15 @@ class AnalyticsConfig:
 
 
 def load_env_config() -> AnalyticsConfig:
+    shared_uri = os.environ.get("MONGODB_URI", "")
+    read_uri = os.environ.get("MONGO_URI_READ") or shared_uri
+    write_uri = os.environ.get("MONGO_URI_WRITE") or shared_uri
+    if not read_uri or not write_uri:
+        raise RuntimeError("Set MONGO_URI_READ/MONGO_URI_WRITE or MONGODB_URI")
+
     return AnalyticsConfig(
-        mongo_uri_read=os.environ["MONGO_URI_READ"],
-        mongo_uri_write=os.environ["MONGO_URI_WRITE"],
+        mongo_uri_read=read_uri,
+        mongo_uri_write=write_uri,
         mongo_db_read=os.environ.get("MONGO_DB_READ", "vet_database"),
         mongo_db_write=os.environ.get("MONGO_DB_WRITE", "vet_analytics"),
     )

@@ -11,10 +11,94 @@ from ..common.mongo import safe_upsert_many
 
 
 def _pick_locale(refs):
-    cnt = Counter(r.get("source_locale", "ru") or "ru" for r in refs)
-    total = sum(cnt.values()) or 1
-    ru_share = (cnt.get("ru", 0) + cnt.get("unknown", 0)) / total
-    return "ru" if ru_share >= 0.8 else "und"
+    cnt = Counter((r.get("source_locale", "und") or "und").lower() for r in refs)
+    if not cnt:
+        return "und"
+    top = cnt.most_common(1)[0][0]
+    if top.startswith("ru"):
+        return "ru"
+    if top.startswith("pt"):
+        return "pt"
+    if top.startswith("sw"):
+        return "sw"
+    return "und"
+
+
+def _first_sentence(text: str) -> str:
+    if not text:
+        return ""
+    parts = [x.strip() for x in text.replace("\n", " ").split(".") if x.strip()]
+    return parts[0][:260] if parts else text[:260]
+
+
+def _mk_questions(locale: str, keywords: list[str], seed: str) -> list[str]:
+    top = keywords[:5] or [seed]
+    out = []
+    if locale == "ru":
+        tmpls = [
+            "{k} у собаки: что делать?",
+            "{k} у кошки: что делать?",
+            "красные флаги при {k}",
+            "диагностика при {k}",
+            "возможные причины {k}",
+            "как понять, что при {k} нужно срочно в клинику?",
+            "что нельзя делать при {k}?",
+            "первые шаги владельца при {k}",
+        ]
+    elif locale == "pt":
+        tmpls = [
+            "{k} em cães: o que fazer?",
+            "{k} em gatos: o que fazer?",
+            "sinais de alerta em {k}",
+            "diagnóstico para {k}",
+            "possíveis causas de {k}",
+        ]
+    elif locale == "sw":
+        tmpls = [
+            "{k} kwa mbwa: nifanye nini?",
+            "{k} kwa paka: nifanye nini?",
+            "dalili hatari za {k}",
+            "uchunguzi wa {k}",
+            "sababu zinazowezekana za {k}",
+        ]
+    else:
+        tmpls = [
+            "{k} in dogs: what to do?",
+            "{k} in cats: what to do?",
+            "red flags for {k}",
+            "diagnostics for {k}",
+            "possible causes of {k}",
+            "when does {k} require urgent vet care?",
+            "what to avoid with {k}?",
+            "first owner actions for {k}",
+        ]
+    for k in top:
+        for t in tmpls:
+            out.append(t.format(k=k))
+            if len(out) >= 15:
+                return out
+    return out[:15]
+
+
+def _aggregate_refs(refs):
+    seen = set()
+    out = []
+    for r in refs:
+        key = (r.get("source_doc_id"), r.get("block_id"), r.get("text_hash"))
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(
+            {
+                "source_doc_id": r.get("source_doc_id"),
+                "title": r.get("title"),
+                "snippet_hash": r.get("text_hash"),
+                "source_locale": r.get("source_locale", "ru"),
+            }
+        )
+        if len(out) >= 100:
+            break
+    return out
 
 
 def _first_sentence(text: str) -> str:
