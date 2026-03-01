@@ -34,11 +34,19 @@ class AnalyticsConfig:
 
 
 def load_env_config() -> AnalyticsConfig:
-    shared_uri = os.environ.get("MONGODB_URI", "")
+    shared_uri = (
+        os.environ.get("MONGODB_URI")
+        or os.environ.get("MONGO_URI")
+        or os.environ.get("MONGO_URL")
+        or ""
+    )
     read_uri = os.environ.get("MONGO_URI_READ") or shared_uri
     write_uri = os.environ.get("MONGO_URI_WRITE") or shared_uri
     if not read_uri or not write_uri:
-        raise RuntimeError("Set MONGO_URI_READ/MONGO_URI_WRITE or MONGODB_URI")
+        raise RuntimeError(
+            "Set MONGO_URI_READ/MONGO_URI_WRITE or MONGODB_URI (or MONGO_URI). "
+            "For GitHub Actions set repository secret MONGODB_URI."
+        )
 
     return AnalyticsConfig(
         mongo_uri_read=read_uri,
