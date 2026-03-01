@@ -54,6 +54,11 @@ def run(ctx):
             )
         ],
         "concepts_low_evidence": [c["concept_id"] for c in concepts if c.get("block_count", 0) < 5],
+        "concepts_high_dup_ratio": [
+            c["concept_id"]
+            for c in concepts
+            if len(list(wdb["dedup_groups"].find({"run_id": read_run_id, "dedup_type": "atom", "members.1": {"$exists": True}}).limit(1))) > 0
+        ],
     }
 
     stopwords = set(get_stopwords_for_locales(["ru", "pt", "sw"]))

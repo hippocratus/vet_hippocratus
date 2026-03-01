@@ -101,6 +101,67 @@ def _aggregate_refs(refs):
     return out
 
 
+def _first_sentence(text: str) -> str:
+    if not text:
+        return ""
+    parts = [x.strip() for x in text.replace("\n", " ").split(".") if x.strip()]
+    return parts[0][:260] if parts else text[:260]
+
+
+def _mk_questions(locale: str, keywords: list[str], seed: str) -> list[str]:
+    top = keywords[:5] or [seed]
+    out = []
+    if locale == "ru":
+        tmpls = [
+            "{k} у собаки: что делать?",
+            "{k} у кошки: что делать?",
+            "красные флаги при {k}",
+            "диагностика при {k}",
+            "возможные причины {k}",
+            "как понять, что при {k} нужно срочно в клинику?",
+            "что нельзя делать при {k}?",
+            "первые шаги владельца при {k}",
+        ]
+    else:
+        tmpls = [
+            "{k} in dogs: what to do?",
+            "{k} in cats: what to do?",
+            "red flags for {k}",
+            "diagnostics for {k}",
+            "possible causes of {k}",
+            "when does {k} require urgent vet care?",
+            "what to avoid with {k}?",
+            "first owner actions for {k}",
+        ]
+    for k in top:
+        for t in tmpls:
+            out.append(t.format(k=k))
+            if len(out) >= 15:
+                return out
+    return out[:15]
+
+
+def _aggregate_refs(refs):
+    seen = set()
+    out = []
+    for r in refs:
+        key = (r.get("source_doc_id"), r.get("block_id"), r.get("text_hash"))
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(
+            {
+                "source_doc_id": r.get("source_doc_id"),
+                "title": r.get("title"),
+                "snippet_hash": r.get("text_hash"),
+                "source_locale": r.get("source_locale", "ru"),
+            }
+        )
+        if len(out) >= 100:
+            break
+    return out
+
+
 def run(ctx):
     cfg = ctx["config"]
     wdb = ctx["mongo"].write_db

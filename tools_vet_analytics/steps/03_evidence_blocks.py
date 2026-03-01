@@ -54,10 +54,22 @@ def _effective_locale(doc, text: str) -> str:
     return _heuristic_locale(text)
 
 
+def _get_dotted_value(doc, path):
+    cur = doc
+    for key in path.split("."):
+        if not isinstance(cur, dict):
+            return None
+        cur = cur.get(key)
+        if cur is None:
+            return None
+    return cur
+
+
 def run(ctx):
     cfg = ctx["config"]
     rdb = ctx["mongo"].read_db
     wdb = ctx["mongo"].write_db
+    read_run_id = cfg.active_run_id or cfg.run_id
     selected = ctx.get("selected_sources", [])
 
     out = []
