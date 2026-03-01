@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hipocratus Pipeline Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .tabs button { margin-right: 8px; }
+    .tab { display: none; margin-top: 12px; }
+    .tab.active { display: block; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 8px; overflow: auto; }
+  </style>
+</head>
+<body>
+  <h1>Hipocratus Vet Analytics Dashboard</h1>
+  <label for="runSelect">Run:</label>
+  <select id="runSelect"></select>
+
+  <div class="tabs">
+    <button data-tab="overview">Overview</button>
+    <button data-tab="locales">Locales</button>
+    <button data-tab="issues">Issues</button>
+    <button data-tab="constraints">Constraints</button>
+    <button data-tab="data">Data</button>
+  </div>
+
+  <div id="overview" class="tab active"><pre id="overviewData"></pre></div>
+  <div id="locales" class="tab"><pre id="localesData"></pre></div>
+  <div id="issues" class="tab"><pre id="issuesData"></pre></div>
+  <div id="constraints" class="tab"><pre id="constraintsData"></pre></div>
+  <div id="data" class="tab"><pre id="dataData"></pre></div>
+
+<script>
+let runs = [];
+
+function showTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+document.querySelectorAll('.tabs button').forEach(btn => {
+  btn.addEventListener('click', () => showTab(btn.dataset.tab));
+});
+
+function render(run) {
+  document.getElementById('overviewData').textContent = JSON.stringify({
+    run_id: run.run_id,
+    coverage: run.coverage,
+    title_stats: run.title_stats
+  }, null, 2);
+  document.getElementById('localesData').textContent = JSON.stringify(run.locale_distribution || {}, null, 2);
+  document.getElementById('issuesData').textContent = JSON.stringify({
+    gaps: run.gaps,
+    bad_titles: run.bad_titles
+  }, null, 2);
+  document.getElementById('constraintsData').textContent = JSON.stringify({
+    write_db: 'vet_analytics',
+    read_db: 'vet_database',
+    old_runs_preserved: true,
+    overwrite_only_by_flag: true
+  }, null, 2);
+  document.getElementById('dataData').textContent = JSON.stringify({
+    counts: run.counts,
+    qa_units_sample: run.qa_units_sample
+  }, null, 2);
+}
+
+fetch('reports/dashboard_data.json')
+  .then(r => r.json())
+  .then(data => {
+    runs = data.runs || [];
+    const sel = document.getElementById('runSelect');
+    runs.forEach((r, idx) => {
+      const opt = document.createElement('option');
+      opt.value = idx;
+      opt.textContent = r.run_id;
+      sel.appendChild(opt);
+    });
+    if (runs.length) {
+      render(runs[0]);
+      sel.addEventListener('change', () => render(runs[Number(sel.value)]));
+    }
+  })
+  .catch(err => {
+    document.getElementById('overviewData').textContent = `Failed to load reports/dashboard_data.json: ${err}`;
+  });
+</script>
+</body>
+</html>

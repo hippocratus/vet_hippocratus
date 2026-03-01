@@ -1,5 +1,8 @@
-pymongo
+pymongo>=4.0
 dnspython
+elasticsearch
+pymupdf
+python-dotenv
 pandas
 numpy
 scikit-learn
