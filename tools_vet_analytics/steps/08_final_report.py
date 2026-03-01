@@ -105,6 +105,28 @@ def run(ctx):
         "sample_good_titles": good_titles,
     }
 
+    stopwords = set(get_stopwords_for_locales(["ru", "pt", "sw"]))
+    bad_titles = []
+    good_titles = []
+    for c in concepts:
+        title = (c.get("title_guess") or "").strip()
+        tokens = [t.strip().lower() for t in title.split(",") if t.strip()]
+        all_stopword = bool(tokens) and all((len(t) < 3 or t in stopwords or t.isdigit()) for t in tokens)
+        too_short = len(tokens) < 2
+        if all_stopword or too_short:
+            if len(bad_titles) < 10:
+                bad_titles.append(title)
+        elif len(good_titles) < 10:
+            good_titles.append(title)
+
+    title_stats = {
+        "total_concepts": len(concepts),
+        "stopword_only_titles_count": len(bad_titles),
+        "pct_stopword_only_titles": (len(bad_titles) / (len(concepts) or 1)),
+        "sample_bad_titles": bad_titles,
+        "sample_good_titles": good_titles,
+    }
+
     coverage = {
         "source_collections": len(inv),
         "evidence_blocks": len(blocks),

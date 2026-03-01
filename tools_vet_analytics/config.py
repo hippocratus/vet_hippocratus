@@ -45,7 +45,7 @@ def load_env_config() -> AnalyticsConfig:
     if not read_uri or not write_uri:
         raise RuntimeError(
             "Set MONGO_URI_READ/MONGO_URI_WRITE or MONGODB_URI (or MONGO_URI). "
-            "For GitHub Actions set repository secret MONGODB_URI."
+            "For GitHub Actions set MONGODB_URI or MONGO_URI_READ/MONGO_URI_WRITE secrets."
         )
 
     return AnalyticsConfig(

@@ -21,6 +21,8 @@ jobs:
       - name: Run analytics
         env:
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          MONGO_URI_READ: ${{ secrets.MONGO_URI_READ }}
+          MONGO_URI_WRITE: ${{ secrets.MONGO_URI_WRITE }}
           MONGO_DB_READ: vet_database
           MONGO_DB_WRITE: vet_analytics
         run: |

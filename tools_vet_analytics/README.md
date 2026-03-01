@@ -8,7 +8,7 @@ Use:
 
 `mongodb+srv://<user>:<pass>@hipocratus.o6syp.mongodb.net/?authSource=admin&appName=Hipocratus`
 
-If only `MONGODB_URI` is provided, pipeline uses it for both read/write clients while still enforcing DB separation (`vet_database` read, `vet_analytics` write).
+If only `MONGODB_URI` is provided, pipeline uses it for both read/write clients while still enforcing DB separation (`vet_database` read, `vet_analytics` write). You can also provide split secrets `MONGO_URI_READ` and `MONGO_URI_WRITE`.
 
 ## Run
 
