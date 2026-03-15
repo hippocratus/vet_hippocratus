@@ -7,7 +7,7 @@ import { normalizeResponse } from "@/utils/normalizeResponse";
 type MessageRole = "user" | "assistant";
 type GroupId = "pet" | "farm" | "wild";
 type RegionId = "EU" | "US" | "LATAM" | "OTHER";
-type Lang = "en" | "de" | "pt-BR";
+type Lang = "en" | "de" | "pt-BR" | "es";
 
 type SpeciesId =
   | "dog"
@@ -57,31 +57,8 @@ const LANG_STORAGE_KEY = "vethipocratus_lang_v1";
 const INTAKE_STORAGE_KEY = "vethipocratus_intake_v1";
 
 const SPECIES_BY_GROUP: Record<GroupId, SpeciesId[]> = {
-  pet: [
-    "dog",
-    "cat",
-    "bird_companion",
-    "fish_ornamental",
-    "reptile",
-    "rodent",
-    "rabbit",
-    "ferret",
-    "minipig",
-    "horse",
-    "other",
-  ],
-  farm: [
-    "cattle",
-    "sheep",
-    "goat",
-    "pig",
-    "poultry_farm",
-    "fish_aquaculture",
-    "horse",
-    "rabbit",
-    "minipig",
-    "other",
-  ],
+  pet: ["dog", "cat", "bird_companion", "reptile", "rodent", "rabbit", "horse", "other"],
+  farm: ["cattle", "sheep", "goat", "pig", "poultry_farm", "horse", "other"],
   wild: ["mammal", "bird_wild", "reptile_amphibian", "other"],
 };
 
@@ -89,7 +66,7 @@ const REGION_OPTIONS: RegionId[] = ["EU", "US", "LATAM", "OTHER"];
 
 const strings = {
   en: {
-    title: "Veterinary Intake Chat",
+    title: "Vet Hippocratus",
     language: "Language",
     reset: "Reset",
     selectType: "Select animal type",
@@ -135,7 +112,7 @@ const strings = {
     error: "Failed to retrieve data. Please try again.",
   },
   de: {
-    title: "Veterinär-Chat mit Intake",
+    title: "Vet Hippocratus",
     language: "Sprache",
     reset: "Zurücksetzen",
     selectType: "Tierart wählen",
@@ -181,7 +158,7 @@ const strings = {
     error: "Abruf fehlgeschlagen. Bitte erneut versuchen.",
   },
   "pt-BR": {
-    title: "Chat Veterinário com Triagem",
+    title: "Vet Hippocratus",
     language: "Idioma",
     reset: "Redefinir",
     selectType: "Escolha o tipo de animal",
@@ -226,6 +203,52 @@ const strings = {
     retry: "Tentar novamente",
     error: "Falha ao buscar dados. Tente novamente.",
   },
+  es: {
+    title: "Vet Hippocratus",
+    language: "Idioma",
+    reset: "Reiniciar",
+    selectType: "Selecciona el tipo de animal",
+    selectSpecies: "Selecciona la especie",
+    selectRegion: "Selecciona la región",
+    group_pet: "Mascota",
+    group_farm: "Granja",
+    group_wild: "Silvestre",
+    region_EU: "Unión Europea (UE)",
+    region_US: "Estados Unidos (EE.UU.)",
+    region_LATAM: "América Latina",
+    region_OTHER: "Otro",
+    dog: "Perro",
+    cat: "Gato",
+    bird_companion: "Ave de compañía",
+    fish_ornamental: "Pez ornamental",
+    reptile: "Reptil",
+    rodent: "Roedor",
+    rabbit: "Conejo",
+    ferret: "Hurón",
+    minipig: "Minicerdo",
+    horse: "Caballo",
+    other: "Otro",
+    cattle: "Bovino",
+    sheep: "Oveja",
+    goat: "Cabra",
+    pig: "Cerdo",
+    poultry_farm: "Aves de corral",
+    fish_aquaculture: "Acuicultura",
+    mammal: "Mamífero",
+    bird_wild: "Ave silvestre",
+    reptile_amphibian: "Reptil / anfibio",
+    contextReady: "Contexto seleccionado. Puedes empezar a chatear.",
+    contextPending: "Completa el formulario para comenzar.",
+    sessionLabel: "Sesión",
+    copyLastAnswer: "Copiar última respuesta",
+    newChat: "Nuevo chat",
+    emptyState: "Envía un mensaje para comenzar.",
+    placeholder: "Escribe tu pregunta...",
+    send: "Enviar",
+    typing: "El asistente está escribiendo...",
+    retry: "Reintentar",
+    error: "Error al obtener datos. Inténtalo de nuevo.",
+  },
 };
 
 function createId(): string {
@@ -258,7 +281,7 @@ function saveChatState(sessionId: string, messages: Message[]): void {
 function loadLang(): Lang {
   if (typeof window === "undefined") return "en";
   const raw = window.localStorage.getItem(LANG_STORAGE_KEY);
-  return raw === "de" || raw === "pt-BR" || raw === "en" ? raw : "en";
+  return raw === "de" || raw === "pt-BR" || raw === "es" || raw === "en" ? raw : "en";
 }
 
 function loadIntake(): IntakeStorage {
@@ -467,7 +490,8 @@ export default function ChatWidget() {
               >
                 <option value="en">EN</option>
                 <option value="de">DE</option>
-                <option value="pt-BR">pt-BR</option>
+                <option value="pt-BR">PT</option>
+                <option value="es">ES</option>
               </select>
             </div>
           </div>
@@ -598,6 +622,17 @@ export default function ChatWidget() {
               )}
               <div ref={endRef} />
             </div>
+
+            {chatEnabled && (
+              <div className="mt-2 mb-1 flex flex-wrap gap-1">
+                <span className="inline-flex items-center gap-1 rounded-full border border-teal-300 bg-teal-50 px-2.5 py-0.5 text-xs font-medium text-teal-800">
+                  {t[`group_${group}` as keyof typeof t] as string}
+                  {" · "}
+                  {t[species as keyof typeof t] as string}
+                  {region ? ` · ${t[`region_${region}` as keyof typeof t] as string}` : ""}
+                </span>
+              </div>
+            )}
 
             <div className="mt-2 flex items-end gap-2">
               <textarea
